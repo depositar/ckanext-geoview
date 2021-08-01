@@ -10,7 +10,7 @@ used to be part of ckanext-spatial_.
 **Note:** This is a work in progress, if you can help with `OpenLayers`_ or `Leaflet`_ development,
 check the `Issues` section for what needs to be done or add a new issue.
 
-
+This extensions supports CKAN 2.6 onwards, including Python 3 support on CKAN 2.9 or higher.
 
 ------------
 Installation
@@ -134,11 +134,109 @@ Other available configuration options are:
 
  * `ckanext.geoview.ol_viewer.hide_overlays`: if set to True, overlays won't be visible by default (only the base layer)
  * `ckanext.geoview.ol_viewer.default_feature_hoveron`: if set to True, feature data popup will be displayed when hovering on
+ * `ckanext.geoview.ol_viewer.forward_ogc_request_params`: if set to True, OGC request parameters that may be present in
+   resource URLs will be kept as part of proxied service requests. If False (default), such parameters will be removed
+   from URL when proxying requests.
 
 
 Each instance of a view has the following configuration options that can override the global configuration :
  * `feature_hoveron`: if set to True, feature data popup will be displayed when hovering on
  * `feature_style`: JSON representation of an OpenLayers style, as accepted by the StyleMap constructor
+
+**Specific basemap support**
+In addition to the basemap types described in `Common base layers for Map Widgets`_, the OpenLayers viewer supports several
+other basemap types, namely TMS, WMTS, WMS
+
+TMS example (here in Mercator projection) ::
+
+    ckanext.spatial.common_map.tms.url = <tms URL>
+    ckanext.spatial.common_map.tms.srs = EPSG:900913
+    ckanext.spatial.common_map.tms.layername = <TMS layer name>
+    ckanext.spatial.common_map.tms.resolutions = [156543.03390625,78271.516953125,39135.7584765625,19567.87923828125,9783.939619140625,4891.9698095703125,2445.9849047851562,1222.9924523925781,611.4962261962891,305.74811309814453,152.87405654907226,76.43702827453613,38.218514137268066,19.109257068634033,9.554628534317017,4.777314267158508,2.388657133579254,1.194328566789627,0.5971642833948135,0.29858214169740677,0.14929107084870338,0.07464553542435169,0.037322767712175846,0.018661383856087923,0.009330691928043961,0.004665345964021981,0.0023326729820109904,0.0011663364910054952,5.831682455027476E-4,2.915841227513738E-4,1.457920613756869E-4]
+    ckanext.spatial.common_map.tms.extent = [-20037508.34, -20037508.34,20037508.34, 20037508.34]
+
+
+WMTS (in this case parameters will be fetched from online capabilities) ::
+
+    ckanext.spatial.common_map.type = wmts
+    ckanext.spatial.common_map.wmts.url = <wmts URL>
+    ckanext.spatial.common_map.wmts.layer = <WMTS layer name>
+    ckanext.spatial.common_map.wmts.srs = EPSG:4326
+
+WMS ::
+
+    ckanext.spatial.common_map.wms.url = <wms URL>
+    ckanext.spatial.common_map.wms.layer = <layer name>
+    ckanext.spatial.common_map.wms.srs = EPSG:31370
+    ckanext.spatial.common_map.wms.extent = [141192.712000, 161464.403000, 158005.472000, 178169.335000]
+
+**Multi basemaps**
+
+Multiple basemaps can be defined in a separate file, and will result in a dropdown in the interface
+allowing to switch between basemaps.
+Basemap definition file is defined as follows ::
+
+    #ckanext.geoview.basemaps=%(here)s/basemaps.json
+
+(here pointing to a file next to the ini file).
+This file is a JSON encoded array of basemap definitions reproducing the structure and syntax described above::
+
+    [
+        {
+            "title": "OSM",
+            "type" : "custom",
+            "url" : "http://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "attribution" : " Map tiles & Data by OpenStreetMap, under CC BY SA."
+        },
+        {
+            "title": "Blue Marble Mercator",
+            "type" : "tms",
+            "url" : "http://demo.opengeo.org/geoserver/gwc/service/tms/",
+            "srs" : "EPSG:900913",
+            "layername" : "nasa%3Abluemarble@EPSG%3A900913@png",
+            "resolutions" : [156543.03390625,78271.516953125,39135.7584765625,19567.87923828125,9783.939619140625,4891.9698095703125,2445.9849047851562,1222.9924523925781,611.4962261962891,305.74811309814453,152.87405654907226,76.43702827453613,38.218514137268066,19.109257068634033,9.554628534317017,4.777314267158508,2.388657133579254,1.194328566789627,0.5971642833948135,0.29858214169740677,0.14929107084870338,0.07464553542435169,0.037322767712175846,0.018661383856087923,0.009330691928043961,0.004665345964021981,0.0023326729820109904,0.0011663364910054952,5.831682455027476E-4,2.915841227513738E-4,1.457920613756869E-4],
+            "extent" : [-20037508.34, -20037508.34,20037508.34, 20037508.34]
+        },
+        {
+            "title": "Blue Marble 4326",
+            "type" : "tms",
+            "url" : "http://demo.opengeo.org/geoserver/gwc/service/tms/",
+            "srs" : "EPSG:4326",
+            "layername" : "nasa%3Abluemarble@EPSG%3A4326@png",
+            "resolutions" : [0.703125,0.3515625,0.17578125,0.087890625,0.0439453125,0.02197265625,0.010986328125,0.0054931640625,0.00274658203125,0.001373291015625,6.866455078125E-4,3.4332275390625E-4,1.71661376953125E-4,8.58306884765625E-5,4.291534423828125E-5,2.1457672119140625E-5,1.0728836059570312E-5,5.364418029785156E-6,2.682209014892578E-6,1.341104507446289E-6,6.705522537231445E-7,3.3527612686157227E-7],
+            "extent" : [-180,-90,180,90]
+        },
+        {
+            "title": "Opengeo WMS demo",
+            "type" : "wms",
+            "url" : "http://demo.opengeo.org/geoserver/ows",
+            "layer" : "ne:NE1_HR_LC_SR_W_DR",
+            "srs" : "EPSG:4326",
+            "extent" : [-180,-90,180,90]
+        }
+    ]
+
+When declared, this basemap list will override the ``ckanext.spatial.common_map`` properties.
+
+**URL specification**
+
+For WMS and WFS views, the URL must be specified carefully to get the desired result. In general, to browse the offered layers or features of a WMS or WFS endpoint, just specify the endpoint in the URL field of the resource, e.g.:
+
+https://neo.sci.gsfc.nasa.gov/wms/wms
+
+or 
+
+http://giswebservices.massgis.state.ma.us/geoserver/wfs
+
+You can request individual layers/features using the "#" sign, e.g.:
+
+https://neo.sci.gsfc.nasa.gov/wms/wms#MOD14A1_M_FIRE
+
+or
+
+http://giswebservices.massgis.state.ma.us/geoserver/wfs#GISDATA.MINLL1_ARC
+
+N.B. For WFS this is the feature name without the qualifier, e.g. GISDATA.MINLL1_ARC and not massgis:GISDATA.MINLL1_ARC in the example above.
 
 Leaflet GeoJSON Viewer
 ----------------------
@@ -157,6 +255,11 @@ On CKAN >= 2.3, if you want the views to be created by default on all GeoJSON fi
 
 
     ckan.views.default_views = ... geojson_view
+
+You can use the ``ckanext.geoview.geojson.max_file_size`` configuration option to define the maximum file size (in bytes) that will be rendered in the map widget. Default is 25 Mb.
+Note that this relies on the resource ``size`` field being set (ie it will only work with uploaded files, not linked externally).
+
+
 
 
 Leaflet WMTS Viewer
