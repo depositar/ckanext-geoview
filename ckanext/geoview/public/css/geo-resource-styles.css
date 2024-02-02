@@ -1,4 +1,4 @@
-.label[data-format=wfs] {
+.badge[data-format=wfs] {
     background-color: #7aae3d;
 }
 .format-label[data-format=wfs],
@@ -11,7 +11,7 @@
     height: 35px;
 }
 
-.label[data-format=wms] {
+.badge[data-format=wms] {
     background-color: #adc717;
 }
 .format-label[data-format=wms],
@@ -24,7 +24,7 @@
     height: 35px;
 }
 
-.label[data-format=gml] {
+.badge[data-format=gml] {
     background-color: #7aae3d;
 }
 .format-label[data-format=gml],
@@ -37,7 +37,7 @@
     height: 35px;
 }
 
-.label[data-format=kml] {
+.badge[data-format=kml] {
     background-color: #7aae3d;
 }
 .format-label[data-format=kml],
@@ -50,7 +50,7 @@
     height: 35px;
 }
 
-.label[data-format=geojson] {
+.badge[data-format=geojson] {
     background-color: #9855e0;
 }
 .format-label[data-format=geojson],
@@ -63,7 +63,7 @@
     height: 35px;
 }
 
-.label[data-format=wmts] {
+.badge[data-format=wmts] {
     background-color: #3333ff;
 }
 .format-label[data-format=wmts],
@@ -76,7 +76,7 @@
     height: 35px;
 }
 
-.label[data-format=shp] {
+.badge[data-format=shp] {
     background-color: #0080ff;
 }
 .format-label[data-format=shp],
@@ -89,15 +89,6 @@
     height: 35px;
 }
 
-.label[data-format=shp] {
-    background-color: #0080ff;
-}
-.format-label[data-format=shp],
-.format-label[data-format*=shp] {
-    background: url("../../img/gis-resources-sprite-icons.png") no-repeat 0 0;
-    background-position: -194px -62px;
-}
-
-.label[data-format=arcgis_rest] {
+.badge[data-format=arcgis_rest] {
     background-color: #5c3ee0;
 }

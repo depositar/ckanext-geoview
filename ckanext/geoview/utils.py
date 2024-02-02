@@ -6,14 +6,8 @@ from six.moves.urllib.parse import urlencode, urlsplit, parse_qs
 
 import requests
 
-import ckan.lib.base as base
-import ckan.lib.helpers as h
-import ckan.logic as logic
-
-import ckantoolkit as toolkit
-
 from ckan import plugins as p
-
+from ckan.plugins import toolkit
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +40,7 @@ def proxy_service_resource(request, context, data_dict):
     than the maximum file size. """
     resource_id = data_dict["resource_id"]
     log.info("Proxify resource {id}".format(id=resource_id))
-    resource = logic.get_action("resource_show")(context, {"id": resource_id})
+    resource = toolkit.get_action("resource_show")(context, {"id": resource_id})
     url = resource["url"]
     return proxy_service_url(request, url)
 
@@ -55,7 +49,7 @@ def proxy_service_url(req, url):
 
     parts = urlsplit(url)
     if not parts.scheme or not parts.netloc:
-        base.abort(409, detail="Invalid URL.")
+        toolkit.abort(409, detail="Invalid URL.")
 
     try:
         method = req.environ["REQUEST_METHOD"]
@@ -63,7 +57,7 @@ def proxy_service_url(req, url):
         params = parse_qs(parts.query)
 
         if not p.toolkit.asbool(
-            base.config.get(
+            toolkit.config.get(
                 "ckanext.geoview.forward_ogc_request_params", "False"
             )
         ):
@@ -88,7 +82,7 @@ def proxy_service_url(req, url):
 
         cl = r.headers.get("content-length")
         if cl and int(cl) > MAX_FILE_SIZE:
-            base.abort(
+            toolkit.abort(
                 409,
                 (
                     """Content is too large to be proxied. Allowed
@@ -101,7 +95,7 @@ def proxy_service_url(req, url):
 
             response = make_response()
         else:
-            response = base.response
+            response = toolkit.response
 
         response.content_type = r.headers["content-type"]
         response.charset = r.encoding
@@ -115,7 +109,7 @@ def proxy_service_url(req, url):
             length += len(chunk)
 
             if length >= MAX_FILE_SIZE:
-                base.abort(
+                toolkit.abort(
                     409,
                     (
                         """Content is too large to be proxied. Allowed
@@ -129,17 +123,17 @@ def proxy_service_url(req, url):
             error.response.status_code,
             error.response.reason,
         )
-        base.abort(409, detail=details)
+        toolkit.abort(409, detail=details)
     except requests.exceptions.ConnectionError as error:
         details = (
             """Could not proxy resource because a
                             connection error occurred. %s"""
             % error
         )
-        base.abort(502, detail=details)
+        toolkit.abort(502, detail=details)
     except requests.exceptions.Timeout as error:
         details = "Could not proxy resource because the connection timed out."
-        base.abort(504, detail=details)
+        toolkit.abort(504, detail=details)
     return response
 
 
@@ -213,7 +207,7 @@ def get_proxified_service_url(data_dict):
     :param data_dict: contains a resource and package dict
     :type data_dict: dictionary
     """
-    url = h.url_for(
+    url = toolkit.url_for(
         action="proxy_service",
         controller='service_proxy',
         id=data_dict["package"]["name"],

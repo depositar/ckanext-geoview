@@ -7,7 +7,7 @@
     {% endblock %}
 
     {% set map_config = h.get_common_map_config_wmts() %}
-    <div data-module="wmtspreview" id="data-preview" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}" data-module-map_config="{{ h.dump_json(map_config) }}">
+    <div data-module="wmtspreview" id="data-preview" data-module-site_url="{{ h.dump_json(h.url_for('/', locale='default', qualified=true)) }}" data-module-map_config="{{ h.dump_json(map_config) }}">
         <h4 class="loading-dialog">
           <div class="loading-spinner"></div>
           <div class="left">{{ _('Loading...') }}</div>

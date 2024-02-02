@@ -5,11 +5,11 @@ import logging
 import mimetypes
 from six.moves.urllib.parse import urlparse
 
-import ckantoolkit as toolkit
 
 from ckan import plugins as p
 from ckan.common import json
 from ckan.lib.datapreview import on_same_domain
+from ckan.plugins import toolkit
 
 import ckanext.geoview.utils as utils
 
@@ -286,7 +286,7 @@ class SHPView(GeoViewBase):
 
     def can_view(self, data_dict):
         resource = data_dict["resource"]
-        format_lower = resource["format"].lower()
+        format_lower = resource.get("format", "").lower()
         name_lower = resource.get("name", "").lower()
         same_domain = on_same_domain(data_dict)
 
