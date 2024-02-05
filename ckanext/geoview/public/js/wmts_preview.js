@@ -6,7 +6,7 @@ ckan.module('wmtspreview', function (jQuery, _) {
 
       self.el.empty();
       self.el.append($('<div></div>').attr('id', 'map'));
-      self.map = ckan.commonLeafletMap('map', this.options.map_config, {center: [0, 0], zoom: 3});
+      self.map = ckan.commonLeafletMap('map', this.options.map_config, {attributionControl: false, center: [0, 0], zoom: 3});
 
       $.ajaxSetup({
         beforeSend: function (xhr) {
