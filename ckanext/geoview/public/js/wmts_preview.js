@@ -141,7 +141,7 @@ ckan.module('wmtspreview', function (jQuery, _) {
       L.DomEvent.disableClickPropagation(container);
 
       // Opacity control for desktop
-      if (!L.Browser.touch) {
+      if (!L.Browser.mobile) {
 	var outer = $('<div id="control" class="ui-opacity">');
 	var inner = $('<div id="handle" class="handle">');
 	var start = false;
